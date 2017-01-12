@@ -64,7 +64,7 @@ radius = diameter/2;
 
 // https://en.wikipedia.org/wiki/Dihedral_angle
 dihedral_angle = acos(-sqrt(5)/3);
-side_angle = dihedral_angle/2;
+original_side_angle = dihedral_angle/2;
 fifth = 360/5;
 
 //Taken from: http://en.wikipedia.org/wiki/Icosahedron#Cartesian_coordinates
@@ -111,9 +111,14 @@ module side_text (string, triangle_center, rotation) {
   translate(triangle_center)
   rotate(rotation)
   linear_extrude(height = text_depth)
-  /*linear_extrude(1000)*/
   text(string, halign = "center", valign = "center", text_font = text_font, size = text_size);
-  /*circle(0.05);*/
+}
+
+module line (string, triangle_center, rotation) {
+  translate(triangle_center)
+  rotate(rotation)
+  linear_extrude(1000)
+  circle(0.05);
 }
 
 
@@ -123,45 +128,81 @@ module side_text (string, triangle_center, rotation) {
   rotate([polyhedron_angle, 0, 0])
   polyhedron(points, faces);
 
-  triangle_angle = 90 - side_angle + polyhedron_angle;
+  side_angle = original_side_angle + polyhedron_angle;
+  top_bottom_angle = 90 - original_side_angle + polyhedron_angle;
 
-  tri_depth = sin(triangle_angle)*triangle_face_height;
-  tri_height = tri_depth/tan(triangle_angle);
+  tri_depth = sin(top_bottom_angle)*triangle_face_height;
+  tri_height = tri_depth/tan(top_bottom_angle); // TODO: Make this independent of the tri_depth
 
-  y = tri_depth * 2/3;
-  z = radius - (tri_height * 2/3);
+  top_y = tri_depth * 2/3;
+  top_z = radius - (tri_height * 2/3);
 
-  side_text(
-    1_text,
-    [0, y, z],
-    [90-triangle_angle, 0, 180]
-  );
+  // Top
+  side_text(1_text, [0, top_y, top_z], [90-top_bottom_angle, 0, 180]);
 
-  /*side_text(
-    1_text,
-    [0, 0 - radius + tri_depth/3, radius/3],
-    [side_angle, 0, 0]
-  );
-  side_text(
-    2_text,
-    [3.5, -3.5, radius/3],
-    [45,45,0]
-  );
-  side_text(
-    8_text,
-    [0, 0 - radius + tri_depth/3, -radius/3],
-    [side_angle, 180, 0]
-  );
+  rotate([0,0,fifth])
+    side_text(2_text, [0, top_y, top_z], [90-top_bottom_angle, 0, 180]);
 
-  side_text(
-    13_text,
-    [0, 0 + radius - tri_depth/3, radius/3],
-    [side_angle, 0, 180]
-  );
-  side_text(
-    20_text,
-    [0, 0 + radius - tri_depth/3, -radius/3],
-    [side_angle, 180, 180]
-  );*/
+  rotate([0,0,2*fifth])
+    side_text(3_text, [0, top_y, top_z], [90-top_bottom_angle, 0, 180]);
 
+  rotate([0,0,3*fifth])
+    side_text(4_text, [0, top_y, top_z], [90-top_bottom_angle, 0, 180]);
+
+  rotate([0,0,4*fifth])
+    side_text(5_text, [0, top_y, top_z], [90-top_bottom_angle, 0, 180]);
+
+  // Middle
+  middle_tri_depth = -cos(side_angle)*triangle_face_height;
+  middle_tri_height = sin(side_angle)*triangle_face_height;
+
+  middle_y = tri_depth + middle_tri_depth/3; // TODO: I think this is wrong
+  middle_z = middle_tri_height/2 - middle_tri_height/3;
+
+  side_text(8_text, [0, middle_y, middle_z], [side_angle+180, 0, 0]);
+
+  rotate([0, 0, fifth/2])
+    side_text(9_text, [0, middle_y, -middle_z], [side_angle+180, 180, 0]);
+
+  rotate([0, 0, fifth])
+    side_text(10_text, [0, middle_y, middle_z], [side_angle+180, 0, 0]);
+
+  rotate([0, 0, 3*fifth/2])
+    side_text(11_text, [0, middle_y, -middle_z], [side_angle+180, 180, 0]);
+
+  rotate([0, 0, 2*fifth])
+    side_text(12_text, [0, middle_y, middle_z], [side_angle+180, 0, 0]);
+
+  rotate([0, 0, 5*fifth/2])
+    side_text(13_text, [0, middle_y, -middle_z], [side_angle+180, 180, 0]);
+
+  rotate([0, 0, 3*fifth])
+    side_text(14_text, [0, middle_y, middle_z], [side_angle+180, 0, 0]);
+
+  rotate([0, 0, 7*fifth/2])
+    side_text(15_text, [0, middle_y, -middle_z], [side_angle+180, 180, 0]);
+
+  rotate([0, 0, 4*fifth])
+    side_text(6_text, [0, middle_y, middle_z], [side_angle+180, 0, 0]);
+
+  rotate([0, 0, 9*fifth/2])
+    side_text(7_text, [0, middle_y, -middle_z], [side_angle+180, 180, 0]);
+
+  // Bottom
+  bottom_y = -top_y;
+  bottom_z = -top_z;
+
+  side_text(20_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
+
+  rotate([0,0,4*fifth])
+    side_text(19_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
+
+  rotate([0,0,3*fifth])
+    side_text(18_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
+
+  rotate([0,0,2*fifth])
+    side_text(17_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
+
+  rotate([0,0,fifth])
+    side_text(16_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
 /*}*/

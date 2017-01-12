@@ -85,26 +85,26 @@ points = [
 ]*edge_length/2;
 
 faces =[
-  [1,3,11],
-  [1,11,6],
-  [1,6,4], // 1
-  [1,4,10],
-  [1,10,3],
-  [3,5,7],
-  [3,7,11],
-  [3,5,10],
-  [11,6,9],
-  [11,7,9],
-  [0,6,9],
-  [0,6,4],
-  [0,8,4],
-  [10,8,4],
-  [10,8,5],
-  [2,8,5],
-  [0,2,9],
-  [0,2,8],
-  [7,2,9],
-  [5,2,7] // 20
+  [3,5,7],  // 1
+  [5,3,10], // 2
+  [1,10,3], // 3
+  [1,3,11], // 4
+  [3,7,11], // 5
+  [11,7,9], // 6
+  [7,2,9],  // 7
+  [5,2,7],  // 8
+  [8,2,5],  // 9
+  [10,8,5], // 10
+  [8,10,4], // 11
+  [1,4,10], // 12
+  [1,6,4],  // 13
+  [1,11,6], // 14
+  [6,11,9], // 15
+  [0,6,9],  // 16
+  [2,0,9],  // 17
+  [0,2,8],  // 18
+  [0,8,4],  // 19
+  [6,0,4]   // 20
 ];
 
 
@@ -117,7 +117,7 @@ module side_text (string, triangle_center, rotation) {
   text(string, halign = "center", valign = "center", text_font = text_font, size = text_size);
 }
 
-/*difference() {*/
+difference() {
   polyhedron_angle = atan(edge_length/rect_height);
   rotate([polyhedron_angle, 0, 0])
   polyhedron(points, faces);
@@ -199,4 +199,4 @@ module side_text (string, triangle_center, rotation) {
 
   rotate([0,0,fifth])
     side_text(16_text, [0, bottom_y, bottom_z], [90-top_bottom_angle+180, 0, 180]);
-/*}*/
+}

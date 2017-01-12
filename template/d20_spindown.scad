@@ -1,14 +1,14 @@
 /* [Die] */
 
 // Distance between opposite sides of the die
-rect_height = 10; // [10:100]
+rect_height = 15; // [10:100]
 
 /* [Face text] */
 
 // Font to use for the faces
-text_font = "Roboto";
+text_font = "Papyrus";
 // Size of the text for the faces
-text_size = 2.0; // [1:100]
+text_size = 3.0; // [1:100]
 // Depth of the text
 text_depth = 0.2;
 text_extrude = text_depth * 2;
@@ -107,14 +107,15 @@ faces =[
   [6,0,4]   // 20
 ];
 
+function towards_origin (start_point, distance) = (-start_point/norm(start_point))*distance;
 
 module side_text (string, triangle_center, rotation) {
-  towards_origin = -triangle_center/norm(triangle_center);
   translate(triangle_center)
-  translate(towards_origin*text_depth)
+  translate(towards_origin(triangle_center, text_depth))
   rotate(rotation)
+
   linear_extrude(height = text_depth*2)
-  text(string, halign = "center", valign = "center", text_font = text_font, size = text_size);
+  text(string, halign = "center", valign = "center", font = text_font, size = text_size);
 }
 
 
@@ -125,7 +126,7 @@ difference() {
     polyhedron(points, faces);
   }
 
-  color("black") {
+  color("blue") {
     side_angle = original_side_angle + polyhedron_angle;
     top_bottom_angle = 90 - original_side_angle + polyhedron_angle;
 

@@ -107,21 +107,15 @@ faces =[
   [5,2,7] // 20
 ];
 
+
 module side_text (string, triangle_center, rotation) {
+  towards_origin = -triangle_center/norm(triangle_center);
   translate(triangle_center)
+  translate(towards_origin*text_depth)
   rotate(rotation)
-  linear_extrude(height = text_depth)
+  linear_extrude(height = text_depth*2)
   text(string, halign = "center", valign = "center", text_font = text_font, size = text_size);
 }
-
-module line (string, triangle_center, rotation) {
-  translate(triangle_center)
-  rotate(rotation)
-  linear_extrude(1000)
-  circle(0.05);
-}
-
-
 
 /*difference() {*/
   polyhedron_angle = atan(edge_length/rect_height);

@@ -118,11 +118,11 @@ module side_text (string, triangle_center, rotation) {
   text(string, halign = "center", valign = "center", font = text_font, size = text_size);
 }
 
-
+polyhedron_angle = atan(edge_length/rect_height);
+rotate([-polyhedron_angle, 0, 0]) // Keep an edge on the bottom
 difference() {
-  polyhedron_angle = atan(edge_length/rect_height);
   color("red") {
-    rotate([polyhedron_angle, 0, 0])
+    rotate([polyhedron_angle, 0, 0]) // This makes modelling it a bit easier
     polyhedron(points, faces);
   }
 

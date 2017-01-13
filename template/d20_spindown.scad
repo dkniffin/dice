@@ -121,7 +121,7 @@ module side_text (string, triangle_center, rotation) {
 polyhedron_angle = atan(edge_length/rect_height);
 rotate([-polyhedron_angle, 2*polyhedron_angle/3, 0]) // Lay a side flat, for easier printing
 difference() {
-  color("red") {
+  color("DarkRed") {
     rotate([polyhedron_angle, 0, 0]) // This makes modelling it a bit easier
     polyhedron(points, faces);
   }

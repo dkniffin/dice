@@ -1,9 +1,12 @@
 /* [Die] */
 
 // Distance from point to point
-height = 7; // [10:100]
+height = 10; // [10:100]
 // Distance from one side to the other, through the middle
 width = 5; // [10:100]
+// Size of the gap between top and bottom
+middle_height = 0.25; // [10:100]
+top_bottom_offset = middle_height/2;
 
 max_z = height/2;
 max_y = width/2;
@@ -13,7 +16,7 @@ max_y = width/2;
 // Font to use for the faces
 text_font = "Roboto";
 // Size of the text for the faces
-text_size = 8.0; // [1:100]
+text_size = 1.0; // [1:100]
 // Depth of the text
 text_depth = 0.2;
 
@@ -46,28 +49,86 @@ s1 = (1/4)*(sqrt(10 + 2*sqrt(5)))*max_y;
 s2 = (1/4)*(sqrt(10 - 2*sqrt(5)))*max_y;
 
 points = [
-  [0, 0, max_z],  // 0 - top
-  [0, 0, -max_z], // 1 - bottom
-  [0, max_y, 0],      // 2 - pentagon 1
-  [s1, c1, 0],    // 3 - pentagon 2
-  [s2, -c2, 0],   // 4 - pentagon 3
-  [-s2, -c2, 0],  // 5 - pentagon 4
-  [-s1, c1, 0]   // 6 - pentagon 5
+  [0, 0, max_z+top_bottom_offset], // 0 - tip
+
+  [0, max_y, top_bottom_offset], // 1 - pentagon 1
+  [s1, c1, top_bottom_offset],   // 2 - pentagon 2
+  [s2, -c2, top_bottom_offset],  // 3 - pentagon 3
+  [-s2, -c2, top_bottom_offset], // 4 - pentagon 4
+  [-s1, c1, top_bottom_offset],   // 5 - pentagon 5
 ];
 
 faces = [
-  [0, 3, 2], // 1
-  [0, 4, 3], // 2
-  [0, 5, 4], // 3
-  [0, 6, 5], // 4
-  [0, 2, 6], // 5
-  [1, 2, 3], // 6
-  [1, 3, 4], // 7
-  [1, 4, 5], // 8
-  [1, 5, 6], // 9
-  [1, 6, 2] // 10
+  // "Cone"
+  [2, 0, 1], // 1
+  [3, 0, 2], // 2
+  [4, 0, 3], // 3
+  [5, 0, 4], // 4
+  [1, 0, 5], // 5
+  // Bottom of "Cone"
+  [2, 1, 3],
+  [3, 1, 4],
+  [4, 1, 5]
 ];
 
+side_depth = c2;
+side_height = max_z - top_bottom_offset;
+
+middle_radius = side_depth * 0.9;
+
+function towards_origin (start_point, distance) = (-start_point/norm(start_point))*distance;
+
+module side_text (string, triangle_center, rotation) {
+  translate(triangle_center)
+  translate(towards_origin(triangle_center, text_depth))
+  rotate(rotation)
+
+  linear_extrude(height = text_depth*2)
+  text(string, halign = "center", valign = "center", font = text_font, size = text_size);
+}
+
+
 difference() {
-  polyhedron(points, faces);
+  color("DarkRed")
+    union() {
+      // Top
+      polyhedron(points, faces);
+
+      // Bottom
+      rotate([180,0,0])
+        polyhedron(points, faces);
+
+      // Middle
+      translate([0,0,-top_bottom_offset])
+      cylinder(h = middle_height, r1 = middle_radius, r2 = middle_radius, $fn = 1000);
+    }
+
+  y = (2/3)*side_depth;
+  z = top_bottom_offset + (1/3)*max_z;
+  angle = 90 - atan(side_depth/side_height);
+
+  fifth = 360/5;
+  color("blue") {
+    side_text(1_text, [0,-y,z], [angle,0,0]);
+    rotate([0,0,fifth])
+      side_text(2_text, [0,-y,z], [angle,0,0]);
+    rotate([0,0,2*fifth])
+      side_text(3_text, [0,-y,z], [angle,0,0]);
+    rotate([0,0,3*fifth])
+      side_text(4_text, [0,-y,z], [angle,0,0]);
+    rotate([0,0,4*fifth])
+      side_text(5_text, [0,-y,z], [angle,0,0]);
+
+    rotate([180, 0, 0]) {
+      side_text(10_text, [0,-y,z], [angle,0,0]);
+      rotate([0,0,fifth])
+        side_text(9_text, [0,-y,z], [angle,0,0]);
+      rotate([0,0,2*fifth])
+        side_text(8_text, [0,-y,z], [angle,0,0]);
+      rotate([0,0,3*fifth])
+        side_text(7_text, [0,-y,z], [angle,0,0]);
+      rotate([0,0,4*fifth])
+        side_text(6_text, [0,-y,z], [angle,0,0]);
+    }
+  }
 }

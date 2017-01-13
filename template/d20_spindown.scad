@@ -10,7 +10,7 @@ text_font = "Papyrus";
 // Size of the text for the faces
 text_size = 3.0; // [1:100]
 // Depth of the text
-text_depth = 0.2;
+text_depth = 0.4;
 text_extrude = text_depth * 2;
 
 // Text to use the for "1" face
